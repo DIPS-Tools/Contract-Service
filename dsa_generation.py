@@ -252,7 +252,8 @@ def get_dsa_contract_text(data):
 
     # provider_name = coalesce(cp.get("organization"), "(please provide organization name)")
 
-    provider_title = coalesce(cp.get("type")).upper()
+    # Contract party roles are determined by the contact slot, not account roles.
+    provider_title = "PROVIDER"
 
     provider_incorp = coalesce(cp.get("incorporation"), "(please provide place of incorporation)")
     provider_addr = coalesce(cp.get("registered_address"), cp.get("address"), "(please provide address)")
@@ -274,7 +275,7 @@ def get_dsa_contract_text(data):
 
     # consumer_name = coalesce(cc.get("organization"), "(please provide organization name)")
 
-    consumer_title = coalesce(cc.get("type")).upper()
+    consumer_title = "CONSUMER"
 
     consumer_incorp = coalesce(cc.get("incorporation"), "(please provide place of incorporation)")
     consumer_addr = coalesce(cc.get("registered_address"), cc.get("address"), "(please provide address)")

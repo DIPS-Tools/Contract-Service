@@ -8,7 +8,7 @@ from cachetools import TTLCache
 from dotenv import load_dotenv
 from fastapi import Depends, Header, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from .user_mapping import build_authenticated_user_payload, resolve_or_create_local_user_from_claims
 
@@ -36,7 +36,7 @@ class AuthenticatedUser(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     name: Optional[str] = None
-    type: Optional[str] = None
+    type: Optional[List[str]] = None
     organization: Optional[Any] = None
     incorporation: Optional[str] = Field(default=None)
     address: Optional[str] = Field(default=None)
@@ -46,6 +46,14 @@ class AuthenticatedUser(BaseModel):
     roles: List[str] = Field(default_factory=list)
     groups: List[str] = Field(default_factory=list)
     is_admin: Optional[bool] = False
+
+    @field_validator("type", mode="before")
+    @classmethod
+    def normalize_account_roles(cls, value):
+        # Accept legacy single-role profiles as well as current list profiles.
+        if isinstance(value, str):
+            return [value]
+        return value
 
 
 _JWKS_CLIENT: Optional[jwt.PyJWKClient] = None

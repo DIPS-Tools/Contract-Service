@@ -78,6 +78,14 @@ def _normalize_organization_claim(value: Any) -> Optional[Any]:
     return [cleaned] if cleaned else None
 
 
+def normalize_user_types(value):
+    values = value if isinstance(value, list) else [value]
+    return list(dict.fromkeys(
+        role.strip().lower() for role in values
+        if isinstance(role, str) and role.strip().lower() in {"consumer", "provider"}
+    ))
+
+
 async def resolve_or_create_local_user_from_claims(claims: Dict[str, Any], log: Optional[logging.Logger] = None) -> Dict[str, Any]:
 
     # `sub` is the stable Keycloak subject identifier and the primary link between the external identity and the local Mongo user document.
@@ -92,7 +100,7 @@ async def resolve_or_create_local_user_from_claims(claims: Dict[str, Any], log: 
     last_name = (claims.get("family_name") or "").strip() or None
     display_name = build_full_name(first_name, last_name)
     username = (claims.get("preferred_username") or "").strip() or None
-    user_type = _clean_optional_string(_claim_attribute_value(claims, "user_type", "type"))
+    user_type = normalize_user_types(_claim_attribute_value(claims, "user_type", "type"))
     organization = _normalize_organization_claim(_claim_attribute_value(claims, "organization", "Organization"))
 
     incorporation = _clean_optional_string(_claim_attribute_value(claims, "incorporation"))
@@ -132,7 +140,7 @@ async def resolve_or_create_local_user_from_claims(claims: Dict[str, Any], log: 
             if username:
                 bind_fields["username"] = username
             if user_type:
-                bind_fields["type"] = user_type
+                bind_fields["type"] = list(dict.fromkeys(normalize_user_types(user.get("type")) + user_type))
             if organization:
                 bind_fields["organization"] = organization
             if incorporation:
@@ -207,8 +215,9 @@ async def resolve_or_create_local_user_from_claims(claims: Dict[str, Any], log: 
             update_fields["name"] = display_name
         if username and user.get("username") != username:
             update_fields["username"] = username
-        if user_type and user.get("type") != user_type:
-            update_fields["type"] = user_type
+        merged_roles = list(dict.fromkeys(normalize_user_types(user.get("type")) + user_type))
+        if merged_roles and user.get("type") != merged_roles:
+            update_fields["type"] = merged_roles
         if organization and user.get("organization") != organization:
             update_fields["organization"] = organization
         if incorporation and user.get("incorporation") != incorporation:

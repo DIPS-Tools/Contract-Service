@@ -245,7 +245,7 @@ def get_consent_contract_text(data):
     provider_addr = coalesce(cp.get("address"), cp.get("registered_address"), "(please provide address)")
 
     consumer_org = coalesce(cc.get("organization"), cc.get("company_name"), cc.get("name"), "(please provide organization name)")
-    consumer_title = coalesce(cc.get("type"), cc.get("distinctive_title")).upper()
+    consumer_title = "CONSUMER"
     consumer_incorp = coalesce(cc.get("incorporation"), cc.get("country"), "(please provide place of incorporation)")
     consumer_addr = coalesce(cc.get("address"), "(please provide address)")
     consumer_vat = coalesce(cc.get("vat_no"), "(please provide vat number)")

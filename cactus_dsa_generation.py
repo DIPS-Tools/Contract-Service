@@ -186,7 +186,7 @@ def get_cactus_dsa_contract_text(data: Dict[str, Any]) -> str:
     cc = norm_keys((contacts.get("consumer") or {}) or {})
 
     provider_organization_name = coalesce(cp.get("organization"), cp.get("company_name"), "(please provide organization name)")
-    provider_title = coalesce(cp.get("type"), "PROVIDER").upper()
+    provider_title = "PROVIDER"
     provider_incorp = coalesce(cp.get("incorporation"), "(please provide incorporation/country/region)")
     provider_addr = coalesce(cp.get("registered_address"), cp.get("address"), "(please provide address)")
     provider_vat = coalesce(cp.get("vat_no"), "(please provide vat number)")
@@ -196,7 +196,7 @@ def get_cactus_dsa_contract_text(data: Dict[str, Any]) -> str:
     provider_phone = coalesce(cp.get("phone"), "(please provide phone)")
 
     consumer_organization_name = coalesce(cc.get("organization"), "(please provide organization name)")
-    consumer_title = coalesce(cc.get("type"), "CONSUMER").upper()
+    consumer_title = "CONSUMER"
     consumer_incorp = coalesce(cc.get("incorporation"), "(please provide incorporation/country/region)")
     consumer_addr = coalesce(cc.get("registered_address"), cc.get("address"), "(please provide address)")
     consumer_vat = coalesce(cc.get("vat_no"), "(please provide vat number)")

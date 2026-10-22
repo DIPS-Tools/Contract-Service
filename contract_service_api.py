@@ -292,7 +292,7 @@ class AuthenticationRegisterUser(BaseModel):
     last_name: Optional[str] = None
     name: Optional[str] = None
     username: Optional[str] = None
-    type: Optional[str] = None
+    type: Optional[List[str]] = None
     email: Optional[str] = None
     password: Optional[str] = None
     organization: Optional[Any] = None
@@ -301,6 +301,11 @@ class AuthenticationRegisterUser(BaseModel):
     vat_no: Optional[str] = None
     position_title: Optional[str] = None
     phone: Optional[str] = None
+
+    @field_validator("type", mode="before")
+    @classmethod
+    def normalize_account_roles(cls, value):
+        return [value] if isinstance(value, str) else value
 
 
 @app.post("/user/login/", summary="Login via Keycloak")
